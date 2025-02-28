@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>価格通知設定</title>
+</head>
+<body>
+    <h1>価格通知設定</h1>
+    <form action="/set_alert" method="POST" id="alertForm">
+        <label for="pair">通貨ペア:</label>
+        <select name="pair" id="pair">
+            <option value="btc_jpy">ビットコイン</option>
+            <option value="eth_jpy">イーサリアム</option>
+            <option value="xlm_jpy">ステラルーメン</option>
+            <option value="xrp_jpy">リップル</option>
+            <option value="flr_jpy">フレア</option>
+        </select><br><br>
+
+        <label for="price">価格:</label>
+        <input type="number" name="price" id="price" step="any" required><br><br>
+
+        <label for="condition">条件:</label>
+        <select name="condition" id="condition">
+            <option value="above">以上</option>
+            <option value="below">以下</option>
+        </select><br><br>
+
+        <button type="submit">通知設定</button>
+    </form>
+
+    <h2>現在の設定一覧</h2>
+    <ul id="alertsList"></ul>
+
+    <script>
+        // 現在の設定一覧を表示
+        fetch('/get_alerts')
+            .then(response => response.json())
+            .then(alerts => {
+                const alertsList = document.getElementById('alertsList');
+                alertsList.innerHTML = '';
+                alerts.forEach(alert => {
+                    const li = document.createElement('li');
+                    li.textContent = `${alert.pair} | ${alert.price}円 ${alert.condition === 'above' ? '以上' : '以下'}`;
+                    alertsList.appendChild(li);
+                });
+            });
+
+        // フォーム送信時にJSONで送信
+        const form = document.getElementById('alertForm');
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = {
+                pair: formData.get('pair'),
+                price: parseFloat(formData.get('price')),
+                condition: formData.get('condition')
+            };
+
+            fetch('/set_alert', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                window.location.reload();
+            })
+            .catch(err => console.error('Error:', err));
+        };
+    </script>
+</body>
+</html>
