@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仮想通貨価格監視ツール</title>
+</head>
+<body>
+    <h1>仮想通貨価格監視ツール</h1>
+
+    <form action="/add_currency" method="POST">
+        <label for="currency">通貨:</label>
+        <select name="currency" id="currency">
+            {% for symbol, name in currencies.items() %}
+                <option value="{{ symbol }}">{{ name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="price">価格:</label>
+        <input type="text" name="price" id="price" required>
+
+        <label for="condition">条件:</label>
+        <select name="condition" id="condition">
+            <option value="以上">以上</option>
+            <option value="以下">以下</option>
+        </select>
+
+        <button type="submit">追加</button>
+    </form>
+
+    <h2>監視中の通貨:</h2>
+    <ul>
+        {% for item in watchlist %}
+            <li>{{ item.symbol }} - {{ item.price }}円 ({{ item.condition }})</li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>
