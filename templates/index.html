@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仮想通貨価格監視</title>
+</head>
+<body>
+    <h1>仮想通貨価格監視</h1>
+
+    <!-- 通貨と価格、条件を設定するフォーム -->
+    <form id="alertForm">
+        <label>通貨コード:</label>
+        <select id="pair" required>
+            <option value="xlm_jpy">ステラルーメン</option>
+            <option value="flr_jpy">フレア</option>
+        </select><br>
+
+        <label>価格:</label>
+        <input type="number" id="price" step="0.01" required><br>
+
+        <label>条件:</label>
+        <select id="condition" required>
+            <option value="above">以上</option>
+            <option value="below">以下</option>
+        </select><br>
+
+        <button type="submit">通知設定</button>
+    </form>
+
+    <h2>設定済みリスト</h2>
+    <ul id="alertsList"></ul>
+
+    <script>
+        // 通知設定をサーバーに送信
+        document.getElementById("alertForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const pair = document.getElementById("pair").value;
+            const price = parseFloat(document.getElementById("price").value);
+            const condition = document.getElementById("condition").value;
+
+            fetch("/set_alert", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ pair, price, condition })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    loadAlerts(); // 設定後、リストを更新
+                } else {
+                    alert(data.error);
+                }
+            });
+        });
+
+        // 設定済みアラートを表示
+        function loadAlerts() {
+            fetch("/get_alerts")
+                .then(response => response.json())
+                .then(data => {
+                    const list = document.getElementById("alertsList");
+                    list.innerHTML = "";
+                    data.forEach(alert => {
+                        const item = document.createElement("li");
+                        item.textContent = `${alert.pair === "xlm_jpy" ? "ステラルーメン" : "フレア"} - ${alert.price}円 ${alert.condition === 'above' ? '以上' : '以下'}`;
+                        list.appendChild(item);
+                    });
+                });
+        }
+
+        // ページ読み込み時に設定済みアラートを表示
+        window.onload = loadAlerts;
+    </script>
+</body>
+</html>
