@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通貨価格監視ツール</title>
+</head>
+<body>
+    <h1>通貨価格監視ツール</h1>
+
+    <form method="POST" action="/add_currency">
+        <label for="currency">通貨を選択:</label>
+        <select id="currency" name="currency">
+            {% for code, name in currencies.items() %}
+                <option value="{{ code }}">{{ name }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="price">目標価格:</label>
+        <input type="number" id="price" name="price" required><br><br>
+
+        <label for="condition">条件:</label>
+        <select id="condition" name="condition">
+            <option value="以上">以上</option>
+            <option value="以下">以下</option>
+        </select><br><br>
+
+        <button type="submit">通貨を追加</button>
+    </form>
+
+    <h2>監視中の通貨</h2>
+    <table>
+        <tr>
+            <th>通貨名</th>
+            <th>価格</th>
+            <th>条件</th>
+        </tr>
+        {% for item in watchlist %}
+            <tr>
+                <td>{{ currencies[item.symbol] }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.condition }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+</body>
+</html>
