@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仮想通貨価格監視</title>
+    <script>
+        async function addCurrency() {
+            const symbol = document.getElementById("symbol").value;
+            const price = document.getElementById("price").value;
+            const condition = document.getElementById("condition").value;
+
+            if (!price) {
+                alert("価格を入力してください");
+                return;
+            }
+
+            const response = await fetch("/add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ symbol, price, condition }),
+            });
+
+            const data = await response.json();
+            alert(data.message);
+            loadWatchlist();
+        }
+
+        async function loadWatchlist() {
+            const response = await fetch("/watchlist");
+            const watchlist = await response.json();
+            const table = document.getElementById("watchlist-table");
+            table.innerHTML = "<tr><th>通貨</th><th>価格</th><th>条件</th></tr>";
+
+            watchlist.forEach(item => {
+                table.innerHTML += `<tr>
+                    <td>${item.symbol}</td>
+                    <td>${item.price}</td>
+                    <td>${item.condition}</td>
+                </tr>`;
+            });
+        }
+
+        window.onload = loadWatchlist;
+    </script>
+</head>
+<body>
+    <h1>仮想通貨価格監視</h1>
+
+    <label>通貨:</label>
+    <select id="symbol">
+        <option value="btc_jpy">ビットコイン (BTC)</option>
+        <option value="eth_jpy">イーサリアム (ETH)</option>
+        <option value="xrp_jpy">リップル (XRP)</option>
+        <option value="ltc_jpy">ライトコイン (LTC)</option>
+        <option value="xlm_jpy">ステラルーメン (XLM)</option>
+        <option value="flr_jpy">フレア (FLR)</option>
+    </select>
+
+    <label>価格:</label>
+    <input type="number" id="price" placeholder="価格を入力">
+
+    <label>条件:</label>
+    <select id="condition">
+        <option value="以上">以上</option>
+        <option value="以下">以下</option>
+    </select>
+
+    <button onclick="addCurrency()">追加</button>
+
+    <h2>監視リスト</h2>
+    <table id="watchlist-table">
+        <tr><th>通貨</th><th>価格</th><th>条件</th></tr>
+    </table>
+</body>
+</html>
