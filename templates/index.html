@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仮想通貨 価格監視</title>
+</head>
+<body>
+    <h1>仮想通貨 価格監視</h1>
+    <form id="watchlist-form">
+        <label for="currency">通貨を選択:</label>
+        <select id="currency">
+            {% for symbol, name in currencies.items() %}
+                <option value="{{ symbol }}">{{ name }}</option>
+            {% endfor %}
+        </select>
+        <label for="price">目標価格:</label>
+        <input type="number" id="price" step="0.01">
+        <label for="condition">条件:</label>
+        <select id="condition">
+            <option value="以上">以上</option>
+            <option value="以下">以下</option>
+        </select>
+        <button type="submit">追加</button>
+    </form>
+
+    <script>
+        document.getElementById("watchlist-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const currency = document.getElementById("currency").value;
+            const price = document.getElementById("price").value;
+            const condition = document.getElementById("condition").value;
+
+            fetch("/add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ symbol: currency, price: price, condition: condition })
+            }).then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error("エラー:", error));
+        });
+    </script>
+</body>
+</html>
