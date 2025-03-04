@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仮想通貨価格通知</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        table { width: 50%; margin: 0 auto; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 8px; }
+        form { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>仮想通貨価格通知</h1>
+    <form method="post">
+        <label for="symbol">通貨を選択:</label>
+        <select name="symbol" required>
+            {% for symbol, name in currencies.items() %}
+                <option value="{{ symbol }}">{{ name }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <label for="price">目標価格:</label>
+        <input type="number" name="price" step="0.01" required>
+        <br><br>
+        <label for="condition">条件:</label>
+        <select name="condition">
+            <option value="以上">以上</option>
+            <option value="以下">以下</option>
+        </select>
+        <br><br>
+        <button type="submit">設定</button>
+    </form>
+
+    <h2>監視中の通貨</h2>
+    <table>
+        <tr>
+            <th>通貨</th>
+            <th>目標価格</th>
+            <th>条件</th>
+        </tr>
+        {% for item in watchlist %}
+        <tr>
+            <td>{{ currencies[item.symbol] }}</td>
+            <td>{{ item.price }}</td>
+            <td>{{ item.condition }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
