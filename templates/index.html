@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仮想通貨価格監視</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .currency-list, .form-container {
+            margin-bottom: 20px;
+        }
+
+        .currency-list table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .currency-list th, .currency-list td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .form-container label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .form-container input, .form-container select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .form-container button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+
+        .currency-list td a {
+            color: red;
+            text-decoration: none;
+        }
+
+        .currency-list td a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>仮想通貨価格監視ツール</h1>
+    </header>
+
+    <div class="container">
+        <div class="form-container">
+            <h2>新しい通貨を追加</h2>
+            <form method="POST">
+                <label for="symbol">通貨選択</label>
+                <select name="symbol" id="symbol" required>
+                    {% for symbol, name in currencies.items() %}
+                        <option value="{{ symbol }}">{{ name }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="price">目標価格</label>
+                <input type="number" name="price" id="price" step="0.01" required>
+
+                <label for="condition">条件</label>
+                <select name="condition" id="condition" required>
+                    <option value="以上">以上</option>
+                    <option value="以下">以下</option>
+                </select>
+
+                <button type="submit">追加する</button>
+            </form>
+        </div>
+
+        <div class="currency-list">
+            <h2>監視中の通貨</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>通貨名</th>
+                        <th>目標価格</th>
+                        <th>条件</th>
+                        <th>削除</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in watchlist %}
+                    <tr>
+                        <td>{{ currencies.get(item['symbol'], item['symbol']) }}</td>
+                        <td>{{ item['price'] }}円</td>
+                        <td>{{ item['condition'] }}</td>
+                        <td><a href="/delete/{{ loop.index }}">削除</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 仮想通貨監視ツール</p>
+    </footer>
+</body>
+</html>
